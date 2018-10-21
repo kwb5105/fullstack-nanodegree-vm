@@ -1,27 +1,51 @@
-<html>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
 
-<body>
-
-    <h1>Catalog Placeholder</h1>
-    <div>
-        <h2> Create a new category</h2>
-        <a href='{{url_for('newCategory')}}'>New Category</a>
+<div class="row banner main">
+    <div class="col-md-1"></div>
+    <div class="col-md-11 padding-none">
+        <h1>Catalog App</h1>
     </div>
+</div>
+<div class="row padding-top padding-bottom">
+    <div class="col-md-1"></div>
+    <div class="col-md-10 padding-none">
+        <a href="{{url_for('newCategory')}}">
+            <button class="btn btn-default" id="new-category">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Category
+            </button>
+        </a>
+    </div>
+    <div class="col-md-1"></div>
+</div>
 
-    <div>
-        {% for catalog in catalogs %}
-        <div>
+
+{% for catalog in catalogs %}
+<div class="row">
+    <div class="col-1"></div>
+    <a href="{{url_for('showItems', category_id = catalog.id) }}">
+        <div class="col-xs-2 catalog-list">
             <h3>{{catalog.name}}</h3>
         </div>
-        <a href='{{url_for('editCategory', category_id = catalog.id) }}'>Edit</a>
-        </br>
-        <a href='{{url_for('deleteCategory', category_id = catalog.id) }}'>Delete</a>
-        </br>
-        </br>
-        {% endfor %}
-
+    </a>
+    <div class="col-md-1"></div>
+    <div class="col-xs-8 catalog-list">
+        <h3>TEST</h3>
     </div>
+</div>
 
-</body>
+<!--
+    <a href='{{url_for('editCategory', category_id = catalog.id) }}'>Edit</a>
+    </br>
+    <a href='{{url_for('deleteCategory', category_id = catalog.id) }}'>Delete</a>
+    </br>
+    </br>
+    -->
 
-</html>
+
+{% endfor %}
+<div class="row padding-top padding-bottom">
+    <div class="col-md-12"></div>
+</div>
+{% endblock %}

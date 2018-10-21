@@ -1,23 +1,21 @@
-<html>
-
-<body>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<div>
+    <h1>New Category</h1>
+</div>
+<div>
     <div>
-            <h1>New Category</h1>
+        <form action="#" method="post">
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" maxlength="100" name="name">
+                <div></div>
+                <button type="submit" id="submit" type="submit">
+                    <span aria-hidden="true"></span>Create</button>
+            </div>
+        </form>
+        <a href='{{url_for('showCatalog')}}'> Cancel </a>
     </div>
-    <div>
-        <div>
-            <form action="#" method = "post">
-                <div>
-                    <label for="name">Name:</label>
-                    <input type="text" maxlength="100" name="name">
-                    <div ></div>
-                    <button type="submit"id="submit" type="submit">
-                        <span aria-hidden="true"></span>Create</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-</body>
-
-</html>
+</div>
+{% endblock %}

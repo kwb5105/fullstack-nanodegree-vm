@@ -19,6 +19,15 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+# Create anti-forgery state token
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
+    login_session['state'] = state
+    # return "The current session state is %s" % login_session['state']
+    return render_template('login.html', STATE=state)
+
 # Show all categories
 @app.route('/')
 @app.route('/catalog/')
@@ -39,15 +48,6 @@ def newCategory():
     else:
         return render_template('newCategory.html')
 
-#Show Items for a Category
-
-@app.route('/category/<int:category_id>/')
-@app.route('/category/<int:category_id>/items/')
-def showItems(category_id):
-    catalog = session.query(Catalog).filter_by(id=category_id).one()
-    items = session.query(CatalogItem).filter_by(
-        category_id=category_id).all()
-    return render_template('catalogItems.html', items=items, catalog=catalog)
 
 # Edit a Category
 
@@ -57,15 +57,15 @@ def editCategory(category_id):
     if request.method == 'POST':
         if request.form['name']:
             editedCategory.name = request.form['name']
-            #flash('Restaurant Successfully Edited %s' % editedCategory.name)
             session.add(editedCategory)
             session.commit()
             return redirect(url_for('showCatalog'))
     else:
         return render_template('editCategory.html', catalog=editedCategory)
 
-# Delete a Category
 
+
+# Delete a Category
 @app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
 def deleteCategory(category_id):
     categoryToDelete = session.query(Catalog).filter_by(id=category_id).one()
@@ -75,6 +75,70 @@ def deleteCategory(category_id):
         return redirect(url_for('showCatalog'))
     else:
         return render_template('deleteCategory.html', catalog=categoryToDelete)
+
+
+
+#Show Items for a Category
+@app.route('/category/<int:category_id>/')
+@app.route('/category/<int:category_id>/items/')
+def showItems(category_id):
+    catalog = session.query(Catalog).filter_by(id=category_id).one()
+    items = session.query(CatalogItem).filter_by(
+        category_id=category_id).all()
+    return render_template('catalogItems.html', items=items, catalog=catalog)
+
+
+
+# Create a new catalog item
+@app.route('/category/<int:category_id>/catalog/new/', methods=['GET', 'POST'])
+def newCatalogItem(category_id):
+    if request.method == 'POST':
+        newItem = CatalogItem(name=request.form['name'], description=request.form[
+                           'description'], category_id=category_id)
+        session.add(newItem)
+        session.commit()
+
+        return redirect(url_for('showItems', category_id=category_id))
+    else:
+        return render_template('newCatalogItem.html', category_id=category_id)
+
+    return render_template('newCatalogItem.html', category_id=category_id)
+
+
+
+# Edit a catalog item
+@app.route('/category/<int:category_id>/catalog/<int:catalog_id>/edit',
+           methods=['GET', 'POST'])
+def editCatalogItem(category_id, catalog_id):
+    editedItem = session.query(CatalogItem).filter_by(id=catalog_id).one()
+    if request.method == 'POST':
+        if request.form['name']:
+            editedItem.name = request.form['name']
+        if request.form['description']:
+            editedItem.description = request.form['description']
+        session.add(editedItem)
+        session.commit()
+        return redirect(url_for('showItems', category_id=category_id))
+    else:
+
+        return render_template(
+            'editCatalogItem.html', category_id=category_id, catalog_id=catalog_id, item=editedItem)
+
+
+
+# Delete a catalog item
+@app.route('/category/<int:category_id>/catalog/<int:catalog_id>/delete',
+           methods=['GET', 'POST'])
+def deleteCatalogItem(category_id, catalog_id):
+    itemToDelete = session.query(CatalogItem).filter_by(id=catalog_id).one()
+    if request.method == 'POST':
+        session.delete(itemToDelete)
+        session.commit()
+        return redirect(url_for('showItems', category_id=category_id))
+    else:
+        return render_template('deleteCatalogItem.html', item=itemToDelete)
+
+
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
