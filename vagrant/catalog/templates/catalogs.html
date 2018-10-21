@@ -1,0 +1,27 @@
+<html>
+
+<body>
+
+    <h1>Catalog Placeholder</h1>
+    <div>
+        <h2> Create a new category</h2>
+        <a href='{{url_for('newCategory')}}'>New Category</a>
+    </div>
+
+    <div>
+        {% for catalog in catalogs %}
+        <div>
+            <h3>{{catalog.name}}</h3>
+        </div>
+        <a href='{{url_for('editCategory', category_id = catalog.id) }}'>Edit</a>
+        </br>
+        <a href='{{url_for('deleteCategory', category_id = catalog.id) }}'>Delete</a>
+        </br>
+        </br>
+        {% endfor %}
+
+    </div>
+
+</body>
+
+</html>

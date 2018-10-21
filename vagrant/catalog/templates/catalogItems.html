@@ -1,0 +1,28 @@
+<html>
+
+<body>
+    <div>
+        <h1>{{ catalog.name }}</h1>
+        
+        <h2>Items</h2>
+
+        {% for i in items %}
+
+        <p>{{i.name}}</p>
+
+
+        <p>{{i.description}}</p>
+
+
+        <a href='blank'>Edit</a>
+        </br>
+        <a href='blank'>Delete</a>
+        </br>
+        </br>
+
+        {% endfor %}
+
+    </div>
+</body>
+
+</html>

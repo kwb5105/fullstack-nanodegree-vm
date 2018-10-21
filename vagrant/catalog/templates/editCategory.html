@@ -1,0 +1,25 @@
+<html>
+
+<body>
+    <div>
+        <h1>Edit {{catalog.name}}</h1>
+    </div>
+
+    <div>
+        <form action="{{url_for('editCategory',category_id = catalog.id)}}" method="post">
+            <div>
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" name="name" value="{{catalog.name}}">
+                <div class="padding-bottom"></div>
+                <button type="submit" id="submit" type="submit">
+                    <span aria-hidden="true"></span>Edit</button>
+                <a href='{{url_for('showCatalog')}}'>
+                        <span aria-hidden="true"></span> Cancel</button>
+                </a>
+            </div>
+        </form>
+    </div>
+
+</body>
+
+</html>
