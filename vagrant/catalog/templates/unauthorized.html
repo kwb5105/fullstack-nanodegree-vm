@@ -5,6 +5,7 @@
     <div class="kyleBannerText">UNAUTHORIZED!</div>
     <div class="col-md-11 padding-none"></div>
 </div>
+<h1>You are not authorized to edit this item. Please create your own item in order to edit.</h1>
 {% for owner in categoryOwner %}
 <div>
     <div class="col-md-12 catalog-list">
@@ -17,7 +18,7 @@
 </div>
 <script>
     function myFunction() {
-        alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');
+        alert('You are not authorized to edit this item. Please create your own item in order to edit.');
         setTimeout(function () {
             window.location.href = "/catalog";
         }, 3000);

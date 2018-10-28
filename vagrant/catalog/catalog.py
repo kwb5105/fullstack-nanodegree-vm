@@ -319,8 +319,9 @@ def editCategory(category_id):
 @app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
 def deleteCategory(category_id):
     categoryToDelete = session.query(Catalog).filter_by(id=category_id).one()
+    editedOwner = session.query(User).filter_by(id = categoryToDelete.user_id)
     if categoryToDelete.user_id != login_session['user_id']:
-        return render_template('unauthorized.html')
+        return render_template('unauthorized.html', categoryOwner=editedOwner)
     if request.method == 'POST':
         session.delete(categoryToDelete)
         session.commit()
@@ -374,10 +375,11 @@ def showCatalogItem(category_id, catalog_id):
 def editCatalogItem(category_id, catalog_id):
     categoryList = session.query(Catalog)
     editedItem = session.query(CatalogItem).filter_by(id=catalog_id).one()
+    editedOwner = session.query(User).filter_by(id = editedItem.user_id)
     if 'username' not in login_session:
         return redirect('/login')
     if editedItem.user_id != login_session['user_id']:
-        return render_template('unauthorized.html')
+        return render_template('unauthorized.html', categoryOwner=editedOwner)
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -403,10 +405,11 @@ def editCatalogItem(category_id, catalog_id):
 def deleteCatalogItem(category_id, catalog_id):
     itemToDelete = session.query(CatalogItem).filter_by(id=catalog_id).one()
     userTable = session.query(User).filter_by(id=itemToDelete.user_id).one()
+    editedOwner = session.query(User).filter_by(id = itemToDelete.user_id)
     if 'username' not in login_session:
         return redirect('/login')
     if itemToDelete.user_id != login_session['user_id']:
-        return render_template('unauthorized.html')
+        return render_template('unauthorized.html', categoryOwner=editedOwner)
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
