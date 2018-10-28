@@ -3,12 +3,23 @@
 {% include "header.html" %}
 
 <div class="row banner main">
-    <div class="col-md-1"></div>
-    <div class="col-md-11 padding-none">
-        <h1>Catalog App</h1>
-    </div>
+    <div class="kyleBannerText">Catalog App</div>
+    <div class="col-md-11 padding-none"></div>
 </div>
-<div class="row padding-top padding-bottom">
+<div class='flash'>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+
+    <ul>
+        {% for message in messages %}
+        <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+</div>
+<div class="row padding-top ">
     <div class="col-md-10 padding-none">
         <div style="float: left; width: 40%">
             <a href="{{url_for('newCategory')}}">
@@ -25,18 +36,20 @@
             </a>
         </div>
     </div>
-    <div class="col-md-1"></div>
+
 </div>
 
 
 <div>
+
     <div style="float: left; width: 25%">
+        <h1>Categories</h1>
         {% for catalog in catalogs %}
         <div class="row">
             <a href="{{url_for('showItems', category_id = catalog.id) }}">
                 <div class="col-xs-10 catalog-list">
                     <h3>{{catalog.name}}</h3>
-
+                    {%if 'username' in session %}
                     <a href='{{url_for('editCategory', category_id = catalog.id) }}'>
                         <button class="btn btn-default" id="edit-item">
                             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>Edit
@@ -47,12 +60,16 @@
                             <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>Delete
                         </button>
                     </a>
+                    {% endif %}
+
                 </div>
             </a>
         </div>
         {% endfor %}
     </div>
+
     <div style="float: left; width: 75%">
+        <h1>Latest Items</h1>
         {% for item in catalogItems %}
         <div class="row">
             <div class="col-xs-10 catalog-list">
@@ -63,5 +80,5 @@
         {% endfor %}
     </div>
 </div>
-
+<div class="row padding-top padding-bottom"></div>
 {% endblock %}

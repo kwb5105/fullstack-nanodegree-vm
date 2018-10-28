@@ -1,3 +1,6 @@
+{% extends "main.html" %}
+{% block content %}
+
 <head>
 
   <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
@@ -14,7 +17,13 @@
 
 <body>
 
-
+  <div class="row top-menu">
+    <div class="col-md-6">
+      <a href="{{url_for('showCatalog')}}">
+        <span class="glyphicon glyphicon-home" aria-hidden="true"></span>Show All Catalogs
+      </a>
+    </div>
+  </div>
   <!-- GOOGLE PLUS SIGN IN-->
   <div id="signinButton">
     <span class="g-signin" data-scope="openid email" data-clientid="233150309960-ihqlla6se8jatvb3u51i405jkepdj9f7.apps.googleusercontent.com"
@@ -141,3 +150,4 @@
 </body>
 
 </html>
+{% endblock %}

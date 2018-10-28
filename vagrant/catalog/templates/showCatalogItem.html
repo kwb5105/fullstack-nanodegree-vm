@@ -2,18 +2,17 @@
 {% block content %}
 {% include "header.html" %}
 <div class="row banner main">
-    <div class="col-md-1"></div>
-    <div class="col-md-11 padding-none">
-        <h1>Catalog App</h1>
-    </div>
+    <div class="kyleBannerText">Catalog Item</div>
+    <div class="col-md-11 padding-none"></div>
 </div>
 <div>
     <div class="col-md-12 catalog-list">
-        <h3>{{item.name}}</h3>
+        <h1>{{item.name}}</h1>
     </div>
     <div class="col-md-12 catalog-list">
-        <h2>{{item.description}}</h2>
+        <h3>{{item.description}}</h3>
     </div>
+    {%if 'username' in session %}
     <a href='{{url_for('editCatalogItem', category_id = catalog_id, catalog_id = item.id) }}'>
         <button class="btn btn-default" id="edit-item">
             <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>Edit
@@ -24,11 +23,10 @@
             <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>Delete
         </button>
     </a>
+    {% endif %}
+
 </div>
 <div class="row padding-top padding-bottom">
     <div class="col-md-12"></div>
 </div>
-
-
-
 {% endblock %}

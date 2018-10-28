@@ -164,8 +164,6 @@ def fbconnect():
     url = 'https://graph.facebook.com/v2.8/me?access_token=%s&fields=name,id,email' % token
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
-    # print "url sent for API access:%s"% url
-    # print "API JSON result: %s" % result
     data = json.loads(result)
     login_session['provider'] = 'facebook'
     login_session['username'] = data["name"]
@@ -203,7 +201,7 @@ def fbconnect():
 
 
 
-# User functions
+#User functions for adding and checking users
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
@@ -288,7 +286,7 @@ def newCategory():
     if request.method == 'POST':
         newCategory = Catalog(name=request.form['name'],user_id=login_session['user_id'])
         session.add(newCategory)
-        #flash('New Category %s Successfully Created' % newCategory.name)
+        flash('New Category %s Successfully Created' % newCategory.name)
         session.commit()
         return redirect(url_for('showCatalog'))
     else:
@@ -310,6 +308,7 @@ def editCategory(category_id):
             editedCategory.name = request.form['name']
             session.add(editedCategory)
             session.commit()
+            flash('Category %s Successfully Updated' % (editedCategory.name))
             return redirect(url_for('showCatalog'))
     else:
         return render_template('editCategory.html', catalog=editedCategory)
@@ -325,6 +324,7 @@ def deleteCategory(category_id):
     if request.method == 'POST':
         session.delete(categoryToDelete)
         session.commit()
+        flash('%s Successfully Deleted' % categoryToDelete.name)
         return redirect(url_for('showCatalog'))
     else:
         return render_template('deleteCategory.html', catalog=categoryToDelete)
@@ -354,12 +354,11 @@ def newCatalogItem():
                            'description'],user_id=login_session['user_id'], category_id=request.form['category'])
         session.add(newItem)
         session.commit()
-
+        flash('New category %s Item Successfully Created' % (newItem.name))
         return redirect(url_for('showCatalog'))
     else:
         return render_template('newCatalogItem.html', categoryList = categoryList)
 
-    return render_template('newCatalogItem.html', categoryList = categoryList)
 
 
 # show a catalog item
@@ -373,6 +372,7 @@ def showCatalogItem(category_id, catalog_id):
 @app.route('/category/<int:category_id>/catalog/<int:catalog_id>/edit',
            methods=['GET', 'POST'])
 def editCatalogItem(category_id, catalog_id):
+    categoryList = session.query(Catalog)
     editedItem = session.query(CatalogItem).filter_by(id=catalog_id).one()
     if 'username' not in login_session:
         return redirect('/login')
@@ -383,13 +383,17 @@ def editCatalogItem(category_id, catalog_id):
             editedItem.name = request.form['name']
         if request.form['description']:
             editedItem.description = request.form['description']
+        if request.form['category']:
+            editedItem.category_id = request.form['category']
         session.add(editedItem)
         session.commit()
-        return redirect(url_for('showItems', category_id=category_id))
+        flash('Successfully Edited Catalog Item: %s' % editedItem.name)
+        return redirect(url_for('showCatalog'))
+        #return redirect(url_for('showItems', category_id=category_id))
     else:
 
         return render_template(
-            'editCatalogItem.html', category_id=category_id, catalog_id=catalog_id, item=editedItem)
+            'editCatalogItem.html', category_id=category_id, catalog_id=catalog_id, item=editedItem, categoryList = categoryList)
 
 
 
@@ -406,7 +410,9 @@ def deleteCatalogItem(category_id, catalog_id):
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
-        return redirect(url_for('showItems', category_id=category_id))
+        flash('Successfully Deleted Menu Item: %s' % itemToDelete.name)
+        return redirect(url_for('showCatalog'))
+        #return redirect(url_for('showItems', category_id=category_id))
     else:
         return render_template('deleteCatalogItem.html', item=itemToDelete)
 
@@ -436,6 +442,6 @@ def disconnect():
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
+    app.secret_key = 'kyles_secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=5000)
