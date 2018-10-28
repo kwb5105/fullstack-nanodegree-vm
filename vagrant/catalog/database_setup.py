@@ -14,6 +14,13 @@ class User(Base):
     email = Column(String(250), nullable=False)
     picture = Column(String(250))
 
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+            'name': self.name,
+            'id': self.id,
+        }
 
 class Catalog(Base):
     __tablename__ = 'catalog'

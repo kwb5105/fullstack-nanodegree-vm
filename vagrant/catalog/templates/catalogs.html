@@ -9,43 +9,59 @@
     </div>
 </div>
 <div class="row padding-top padding-bottom">
-    <div class="col-md-1"></div>
     <div class="col-md-10 padding-none">
-        <a href="{{url_for('newCategory')}}">
-            <button class="btn btn-default" id="new-category">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Category
-            </button>
-        </a>
-    </div>
-    <div class="col-md-1"></div>
-</div>
-
-
-{% for catalog in catalogs %}
-<div class="row">
-    <div class="col-1"></div>
-    <a href="{{url_for('showItems', category_id = catalog.id) }}">
-        <div class="col-xs-2 catalog-list">
-            <h3>{{catalog.name}}</h3>
+        <div style="float: left; width: 40%">
+            <a href="{{url_for('newCategory')}}">
+                <button class="btn btn-default" id="new-category">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Category
+                </button>
+            </a>
         </div>
-    </a>
+        <div style="float: left; width: 50%">
+            <a href="{{url_for('newCatalogItem')}}">
+                <button class="btn btn-default" id="new-category">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Item
+                </button>
+            </a>
+        </div>
+    </div>
     <div class="col-md-1"></div>
-    <div class="col-xs-8 catalog-list">
-        <h3>TEST</h3>
+</div>
+
+
+<div>
+    <div style="float: left; width: 25%">
+        {% for catalog in catalogs %}
+        <div class="row">
+            <a href="{{url_for('showItems', category_id = catalog.id) }}">
+                <div class="col-xs-10 catalog-list">
+                    <h3>{{catalog.name}}</h3>
+
+                    <a href='{{url_for('editCategory', category_id = catalog.id) }}'>
+                        <button class="btn btn-default" id="edit-item">
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>Edit
+                        </button>
+                    </a>
+                    <a href='{{url_for('deleteCategory', category_id = catalog.id) }}'>
+                        <button class="btn btn-default delete" id="delete-item">
+                            <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>Delete
+                        </button>
+                    </a>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    <div style="float: left; width: 75%">
+        {% for item in catalogItems %}
+        <div class="row">
+            <div class="col-xs-10 catalog-list">
+                <h3><a href='{{url_for('showCatalogItem', category_id = item.catalogID, catalog_id=item.itemID) }}'><strong>{{item.catalogName}}</strong></a>
+                    ({{item.categoryName}})</h3>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 
-<!--
-    <a href='{{url_for('editCategory', category_id = catalog.id) }}'>Edit</a>
-    </br>
-    <a href='{{url_for('deleteCategory', category_id = catalog.id) }}'>Delete</a>
-    </br>
-    </br>
-    -->
-
-
-{% endfor %}
-<div class="row padding-top padding-bottom">
-    <div class="col-md-12"></div>
-</div>
 {% endblock %}

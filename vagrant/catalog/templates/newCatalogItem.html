@@ -1,30 +1,32 @@
-<html>
-
-<body>
-
-    <h1>New Catalog Item</h1>
-
-    <form action="#" method='post'>
-
-
-        <p>Name:</p>
-        <input type='text' size='30' name='name'>
-        <p>Description:</p>
-        <input type='text' size='30' name='description'>
-        <!---   
-	<p>Course:</p>
-		<input type ='radio'  name='course' value ='Appetizer'>Appetizer</br>
-		<input type ='radio'  name='course' value ='Entree'>Entree</br>
-		<input type ='radio' name='course' value ='Dessert'>Dessert</br>
-        <input type ='radio'  name='course' value ='Beverage'>Beverage</br>
-    -->
-        </br>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<div class="row banner main">
+    <div class="col-md-1"></div>
+    <div class="col-md-11 padding-none">
+        <h1>New Catalog Item</h1>
+    </div>
+</div>
 
 
-        <input type='submit' value='Create'>
+<form action="#" method='post'>
 
-    </form>
-    <a href = '{{url_for('showCatalog')}}'> Cancel </a>
-</body>
+    <p>Name:</p>
+    <input type='text' size='80' name='name'>
+    <p>Description:</p>
+    <textarea rows="4" cols="80" name='description'>Enter description
+    </textarea>
+    <p>Category :</p>
+    <select name='category'>
+        {% for category in categoryList %}
+        <option value="{{category.id}}">{{category.name}}</option>
+        {% endfor %}
+    </select>
+    </br>
 
-</html>
+
+    <input type='submit' value='Create'>
+
+</form>
+<a href='{{url_for('showCatalog')}}'> Cancel </a>
+{% endblock %}

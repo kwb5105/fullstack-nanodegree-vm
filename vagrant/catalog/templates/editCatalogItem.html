@@ -1,20 +1,25 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
-<h1> Edit Menu Item </h1>
+<div class="row banner main">
+	<div class="col-md-1"></div>
+	<div class="col-md-11 padding-none">
+		<h1> Edit Menu Item </h1>
+	</div>
+</div>
 
-<form action="#" method = 'post'>
+<form action="#" method='post'>
 
 
 	<p>Name:</p>
-		<input type ='text' size='30' name='name' placeholder = '{{item.name }}'>
+	<input type='text' size='30' name='name' placeholder='{{item.name }}'>
 	<p>Description:</p>
-		<input type ='text' size='30' name='description' placeholder = '{{item.description}}'>
+	<input type='text' size='30' name='description' placeholder='{{item.description}}'>
 
-<input type='submit' value='Edit'>
+	<input type='submit' value='Edit'>
 
 
-<a href = '{{url_for('showCatalog')}}'> Cancel </a>
+	<a href='{{url_for('showCatalog')}}'> Cancel </a>
 
 
 </form>

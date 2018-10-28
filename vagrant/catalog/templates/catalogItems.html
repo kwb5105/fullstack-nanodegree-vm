@@ -12,7 +12,7 @@
     <div class="col-md-10 padding-none">
         <a href="{{url_for('newCatalogItem', category_id = catalog.id) }}">
             <button class="btn btn-default" id="new-category">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Category
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Item
             </button>
         </a>
     </div>
@@ -25,7 +25,7 @@
     <div class="row">
         <div class="col-md-1"></div>
         <div class="col-md-10 catalog-list">
-            <a href='{{url_for('editCatalogItem', category_id = catalog.id, catalog_id = i.id) }}'>
+            <a href='{{url_for('showCatalogItem', category_id = catalog.id, catalog_id = i.id) }}'>
             <h3>{{i.name}}</h3>
             <h3>{{i.description}}</h3>
         </div>

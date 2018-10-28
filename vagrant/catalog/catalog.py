@@ -26,28 +26,6 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# User functions
-def createUser(login_session):
-    newUser = User(name=login_session['username'], email=login_session[
-                   'email'], picture=login_session['picture'])
-    session.add(newUser)
-    session.commit()
-    user = session.query(User).filter_by(email=login_session['email']).one()
-    return user.id
-
-
-def getUserInfo(user_id):
-    user = session.query(User).filter_by(id=user_id).one()
-    return user
-
-
-def getUserID(email):
-    try:
-        user = session.query(User).filter_by(email=email).one()
-        return user.id
-    except:
-        return None
-
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
@@ -210,6 +188,7 @@ def fbconnect():
     if not user_id:
         user_id = createUser(login_session)
     login_session['user_id'] = user_id
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -224,6 +203,30 @@ def fbconnect():
 
 
 
+# User functions
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        print ("This failed for some reason")
+        return None
+        
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session.get('access_token')
@@ -271,8 +274,10 @@ def fbdisconnect():
 @app.route('/')
 @app.route('/catalog/')
 def showCatalog():
+    #catalogItems = session.query(CatalogItem).order_by("id desc").limit(10)
+    catalogItems = session.execute("select catalog_item.name as catalogName, catalog.name as categoryName, catalog.id as catalogID, catalog_item.id as itemID from catalog_item inner join catalog on (catalog_item.category_id = catalog.id) order by catalog_item.id desc limit (10)")
     catalogs = session.query(Catalog)
-    return render_template('catalogs.html', catalogs=catalogs)
+    return render_template('catalogs.html', catalogs=catalogs, catalogItems=catalogItems)
 
 
 # Create a new category
@@ -281,7 +286,7 @@ def newCategory():
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
-        newCategory = Catalog(name=request.form['name'],user_id='1')
+        newCategory = Catalog(name=request.form['name'],user_id=login_session['user_id'])
         session.add(newCategory)
         #flash('New Category %s Successfully Created' % newCategory.name)
         session.commit()
@@ -295,6 +300,9 @@ def newCategory():
 @app.route('/category/<int:category_id>/edit/', methods=['GET', 'POST'])
 def editCategory(category_id):
     editedCategory= session.query(Catalog).filter_by(id=category_id).one()
+    editedOwner = session.query(User).filter_by(id = editedCategory.user_id)
+    if editedCategory.user_id != login_session['user_id']:
+        return render_template('unauthorized.html', categoryOwner=editedOwner)
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
@@ -312,6 +320,8 @@ def editCategory(category_id):
 @app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
 def deleteCategory(category_id):
     categoryToDelete = session.query(Catalog).filter_by(id=category_id).one()
+    if categoryToDelete.user_id != login_session['user_id']:
+        return render_template('unauthorized.html')
     if request.method == 'POST':
         session.delete(categoryToDelete)
         session.commit()
@@ -328,28 +338,36 @@ def showItems(category_id):
     catalog = session.query(Catalog).filter_by(id=category_id).one()
     items = session.query(CatalogItem).filter_by(
         category_id=category_id).all()
+    print ('Created by: ' + str(catalog.user_id))
     return render_template('catalogItems.html', items=items, catalog=catalog)
 
 
 
 # Create a new catalog item
-@app.route('/category/<int:category_id>/catalog/new/', methods=['GET', 'POST'])
-def newCatalogItem(category_id):
+@app.route('/category/catalog/new/', methods=['GET', 'POST'])
+def newCatalogItem():
+    categoryList = session.query(Catalog)
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
         newItem = CatalogItem(name=request.form['name'], description=request.form[
-                           'description'], category_id=category_id)
+                           'description'],user_id=login_session['user_id'], category_id=request.form['category'])
         session.add(newItem)
         session.commit()
 
-        return redirect(url_for('showItems', category_id=category_id))
+        return redirect(url_for('showCatalog'))
     else:
-        return render_template('newCatalogItem.html', category_id=category_id)
+        return render_template('newCatalogItem.html', categoryList = categoryList)
 
-    return render_template('newCatalogItem.html', category_id=category_id)
+    return render_template('newCatalogItem.html', categoryList = categoryList)
 
 
+# show a catalog item
+@app.route('/category/<int:category_id>/catalog/<int:catalog_id>/show')
+def showCatalogItem(category_id, catalog_id):
+    shownItem = session.query(CatalogItem).filter_by(id=catalog_id).one()
+    return render_template(
+            'showCatalogItem.html', category_id=category_id, catalog_id=catalog_id, item=shownItem)
 
 # Edit a catalog item
 @app.route('/category/<int:category_id>/catalog/<int:catalog_id>/edit',
@@ -358,6 +376,8 @@ def editCatalogItem(category_id, catalog_id):
     editedItem = session.query(CatalogItem).filter_by(id=catalog_id).one()
     if 'username' not in login_session:
         return redirect('/login')
+    if editedItem.user_id != login_session['user_id']:
+        return render_template('unauthorized.html')
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -381,23 +401,14 @@ def deleteCatalogItem(category_id, catalog_id):
     userTable = session.query(User).filter_by(id=itemToDelete.user_id).one()
     if 'username' not in login_session:
         return redirect('/login')
-
-    output = ''
-    output += '<h1>Creator of this table is, '
-    output += userTable.name
-
-    output += '!</h1>'
-    return output
-    '''
-    if 'username' not in login_session:
-        return redirect('/login')
+    if itemToDelete.user_id != login_session['user_id']:
+        return render_template('unauthorized.html')
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
         return redirect(url_for('showItems', category_id=category_id))
     else:
         return render_template('deleteCatalogItem.html', item=itemToDelete)
-    '''
 
 
 # Disconnect based on provider
@@ -414,7 +425,7 @@ def disconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        #del login_session['user_id']
+        del login_session['user_id']
         del login_session['provider']
         flash("You have successfully been logged out.")
         return redirect(url_for('showCatalog'))
