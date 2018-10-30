@@ -11,4 +11,5 @@ This is a project designed from scratch.
 Create 2 views in the database 
 - Dot Placeholder 
 
+After setting up 
 `Code example Placeholder`

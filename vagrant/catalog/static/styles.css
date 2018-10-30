@@ -101,17 +101,17 @@ a {
 	margin-right: 10px;
 }
 
-.top-menu {
+.top-catalog {
 	padding-top: 30px;
 	padding-bottom: 30px;
 }
 
-.top-menu p {
+.top-catalog p {
 	margin-bottom: 0;
 	line-height: 16px;
 }
 
-.top-menu a {
+.top-catalog a {
 	margin-bottom: 0;
 	line-height: 16px;
 	font-size: 16px;
@@ -139,10 +139,6 @@ a {
 	background-size: cover;
 }
 
-.banner.menu {
-	height: 150px;
-	background-color: #E1E17F;
-}
 
 .banner.profile {
 	height: 150px;
