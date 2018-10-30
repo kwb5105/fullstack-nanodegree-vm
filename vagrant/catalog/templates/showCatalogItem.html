@@ -24,6 +24,13 @@
         </button>
     </a>
     {% endif %}
+    <div class="col-md-2">
+        <a href="{{url_for('catalogItemJSON', category_id = catalog_id, catalog_id = item.id) }}">
+            <button class="btn btn-default" id="json-item-category">
+                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>JSON
+            </button>
+        </a>
+    </div>
 
 </div>
 <div class="row padding-top padding-bottom">

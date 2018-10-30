@@ -1,19 +1,29 @@
 {% extends "main.html" %}
 {% block content %}
 {% include "header.html" %}
+
 <div class="row banner main">
     <div class="kyleBannerText">{{ catalog.name }}</div>
     <div class="col-md-11 padding-none"></div>
 </div>
+
 <div class="row padding-top padding-bottom">
     <div class="col-md-1"></div>
     <div class="col-md-10 padding-none">
-        <h2>Items</h2>
-        <a href="{{url_for('newCatalogItem', category_id = catalog.id) }}">
-            <button class="btn btn-default" id="new-category">
-                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Item
-            </button>
-        </a>
+        <div class="col-md-2">
+            <a href="{{url_for('newCatalogItem', category_id = catalog.id) }}">
+                <button class="btn btn-default" id="new-category">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Add Item
+                </button>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="{{url_for('categoryListJSON', category_id = catalog.id) }}">
+                <button class="btn btn-default" id="json-category-list">
+                    <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>JSON
+                </button>
+            </a>
+        </div>
     </div>
     <div class="col-md-1"></div>
 </div>

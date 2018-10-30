@@ -17,7 +17,7 @@ app = Flask(__name__)
 #Client Secrets establishment
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
-APPLICATION_NAME = "Restaurant Menu Application"
+APPLICATION_NAME = "Catalog Application"
 
 # Connect to Database and create database session
 engine = create_engine('sqlite:///catalogItem.db', connect_args={'check_same_thread':False}, poolclass=StaticPool)
@@ -25,6 +25,7 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
 
 # Create anti-forgery state token
 @app.route('/login')
@@ -278,6 +279,15 @@ def showCatalog():
     return render_template('catalogs.html', catalogs=catalogs, catalogItems=catalogItems)
 
 
+
+#Json for all Categories
+@app.route('/catalog/JSON')
+def catalogJSON():
+    restaurants = session.query(Catalog).all()
+    return jsonify(restaurants=[r.serialize for r in restaurants])
+
+
+
 # Create a new category
 @app.route('/category/new/', methods=['GET', 'POST'])
 def newCategory():
@@ -291,6 +301,7 @@ def newCategory():
         return redirect(url_for('showCatalog'))
     else:
         return render_template('newCategory.html')
+
 
 
 # Edit a Category
@@ -343,6 +354,15 @@ def showItems(category_id):
     return render_template('catalogItems.html', items=items, catalog=catalog)
 
 
+#JSON for Items in a category
+@app.route('/category/<int:category_id>/items/JSON')
+def categoryListJSON(category_id):
+    category = session.query(Catalog).filter_by(id=category_id).one()
+    items = session.query(CatalogItem).filter_by(
+        category_id=category_id).all()
+    return jsonify(CatalogItem=[i.serialize for i in items])
+
+
 
 # Create a new catalog item
 @app.route('/category/catalog/new/', methods=['GET', 'POST'])
@@ -368,6 +388,15 @@ def showCatalogItem(category_id, catalog_id):
     shownItem = session.query(CatalogItem).filter_by(id=catalog_id).one()
     return render_template(
             'showCatalogItem.html', category_id=category_id, catalog_id=catalog_id, item=shownItem)
+
+
+#JSON of single catalog item
+@app.route('/category/<int:category_id>/catalog/<int:catalog_id>/JSON')
+def catalogItemJSON(category_id, catalog_id):
+    Catalog_Item = session.query(CatalogItem).filter_by(id=catalog_id).one()
+    return jsonify(Catalog_Item=Catalog_Item.serialize)
+
+
 
 # Edit a catalog item
 @app.route('/category/<int:category_id>/catalog/<int:catalog_id>/edit',
@@ -413,7 +442,7 @@ def deleteCatalogItem(category_id, catalog_id):
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
-        flash('Successfully Deleted Menu Item: %s' % itemToDelete.name)
+        flash('Successfully Deleted Catalog Item: %s' % itemToDelete.name)
         return redirect(url_for('showCatalog'))
         #return redirect(url_for('showItems', category_id=category_id))
     else:
